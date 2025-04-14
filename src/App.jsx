@@ -4,7 +4,7 @@ import GeofenceDashboard from './pages/geofence-dashboard'
 
 function App() {
   return (
-   <div>
+   <div className='h-screen bg-black w-full'>
     <GeofenceDashboard />
    </div>
   )
