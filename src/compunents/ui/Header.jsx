@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react"
+import { useLocation, Link } from "react-router-dom" // Add this import
 import {
   MapPin,
   LayoutDashboard,
@@ -20,35 +21,59 @@ import { motion, AnimatePresence } from "framer-motion"
 import logo from "../../assets/logo.png"
 
 // Navigation Item Component with hover effects
-function NavItem({ icon, label, active = false }) {
+function NavItem({ icon, label, active = false, to }) {
   return (
-    <motion.div
-      className={`relative flex items-center justify-center px-4 py-3 border-r border-gray-700 cursor-pointer transition-all duration-300 hover:bg-[#1a4971] ${
-        active ? "bg-[#337ab7]" : ""
-      }`}
-      whileHover={{ y: -2 }}
-      whileTap={{ scale: 0.95 }}
-    >
-      <div className="flex flex-col items-center">
-        <motion.div
-          initial={{ scale: 1 }}
-          whileHover={{ scale: 1.2 }}
-          transition={{ duration: 0.2 }}
-        >
-          {icon}
-        </motion.div>
-        <span className="text-xs mt-1 font-medium">{label}</span>
+    <Link to={to} className="block">
+      <motion.div
+        className={`relative flex items-center justify-center px-4 py-3 border-r border-gray-700 cursor-pointer transition-all duration-300 hover:bg-[#1a4971] ${
+          active ? "bg-[#337ab7]" : ""
+        }`}
+        whileHover={{ y: -2 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <div className="flex flex-col items-center">
+          <motion.div
+            initial={{ scale: 1 }}
+            whileHover={{ scale: 1.2 }}
+            transition={{ duration: 0.2 }}
+          >
+            {icon}
+          </motion.div>
+          <span className="text-xs mt-1 font-medium">{label}</span>
+          {active && (
+            <motion.div 
+              className="absolute bottom-0 left-0 h-1 bg-yellow-400 w-full"
+              layoutId="activeIndicator"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            />
+          )}
+        </div>
+      </motion.div>
+    </Link>
+  )
+}
+
+// Mobile Navigation Item
+function MobileNavItem({ icon, label, active = false, onClick, to }) {
+  return (
+    <Link to={to} className="block">
+      <motion.div
+        className={`flex items-center px-4 py-3 ${active ? "bg-[#337ab7]" : ""}`}
+        whileTap={{ backgroundColor: "#1a4971" }}
+        onClick={onClick}
+      >
+        <div className="mr-3">{icon}</div>
+        <span className="font-medium">{label}</span>
         {active && (
           <motion.div 
-            className="absolute bottom-0 left-0 h-1 bg-yellow-400 w-full"
-            layoutId="activeIndicator"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
+            className="ml-auto h-2 w-2 rounded-full bg-yellow-400"
+            layoutId="mobileActiveIndicator"
           />
         )}
-      </div>
-    </motion.div>
+      </motion.div>
+    </Link>
   )
 }
 
@@ -86,6 +111,7 @@ function DropdownMenu({ isOpen, items, onClose }) {
 }
 
 export default function Header() {
+  const location = useLocation(); // Get current location
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
@@ -137,6 +163,17 @@ export default function Header() {
     { icon: <HelpCircle size={16} />, label: "FAQs" }
   ]
 
+  // Check if a path is active
+  const isActive = (path) => {
+    if (path === '/' && location.pathname === '/') {
+      return true;
+    }
+    if (path !== '/' && location.pathname.startsWith(path)) {
+      return true;
+    }
+    return false;
+  }
+
   return (
     <motion.header 
       className={`sticky top-0 z-50 w-full ${
@@ -151,20 +188,22 @@ export default function Header() {
       <div className="w-full max-w-[1800px] mx-auto lg:px-8">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <motion.div 
-            className="w-[205px] h-[40px] flex items-center justify-center overflow-hidden"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <motion.img 
-              src={logo} 
-              alt="Company Logo"
-              className="h-full object-contain cursor-pointer"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            />
-          </motion.div>
+          <Link to="/">
+            <motion.div 
+              className="w-[205px] h-[40px] flex items-center justify-center overflow-hidden"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <motion.img 
+                src={logo} 
+                alt="Company Logo"
+                className="h-full object-contain cursor-pointer"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              />
+            </motion.div>
+          </Link>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center pr-2 sm:py-5 py-4">
@@ -179,13 +218,13 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex flex-1">
-            <NavItem icon={<MapPin />} label="LIVE MAP" />
-            <NavItem icon={<LayoutDashboard />} label="DASHBOARD" />
-            <NavItem icon={<Map />} label="GEOFENCE" active />
-            <NavItem icon={<Repeat />} label="REPLAY" />
-            <NavItem icon={<FileText />} label="REPORTS" />
-            <NavItem icon={<Bell />} label="LIVE ALERT" />
-            <NavItem icon={<Clock />} label="Driver TimeLine" />
+            <NavItem icon={<MapPin />} label="LIVE MAP" active={isActive('/')} to="/" />
+            <NavItem icon={<LayoutDashboard />} label="DASHBOARD" active={isActive('/dashboard')} to="/dashboard" />
+            <NavItem icon={<Map />} label="GEOFENCE" active={isActive('/geofence')} to="/geofence" />
+            <NavItem icon={<Repeat />} label="REPLAY" active={isActive('/replay')} to="/replay" />
+            <NavItem icon={<FileText />} label="REPORTS" active={isActive('/reports')} to="/reports" />
+            <NavItem icon={<Bell />} label="LIVE ALERT" active={isActive('/alerts')} to="/alerts" />
+            <NavItem icon={<Clock />} label="Driver TimeLine" active={isActive('/timeline')} to="/timeline" />
           </nav>
 
           {/* User Profile - Desktop */}
@@ -265,13 +304,13 @@ export default function Header() {
               className="md:hidden overflow-hidden"
             >
               <div className="flex flex-col py-2 border-t border-gray-700">
-                <MobileNavItem icon={<MapPin size={18} />} label="LIVE MAP" />
-                <MobileNavItem icon={<LayoutDashboard size={18} />} label="DASHBOARD" />
-                <MobileNavItem icon={<Map size={18} />} label="GEOFENCE" active />
-                <MobileNavItem icon={<Repeat size={18} />} label="REPLAY" />
-                <MobileNavItem icon={<FileText size={18} />} label="REPORTS" />
-                <MobileNavItem icon={<Bell size={18} />} label="LIVE ALERT" />
-                <MobileNavItem icon={<Clock size={18} />} label="Driver TimeLine" />
+                <MobileNavItem icon={<MapPin size={18} />} label="LIVE MAP" active={isActive('/')} to="/" />
+                <MobileNavItem icon={<LayoutDashboard size={18} />} label="DASHBOARD" active={isActive('/dashboard')} to="/dashboard" />
+                <MobileNavItem icon={<Map size={18} />} label="GEOFENCE" active={isActive('/geofence')} to="/geofence" />
+                <MobileNavItem icon={<Repeat size={18} />} label="REPLAY" active={isActive('/replay')} to="/replay" />
+                <MobileNavItem icon={<FileText size={18} />} label="REPORTS" active={isActive('/reports')} to="/reports" />
+                <MobileNavItem icon={<Bell size={18} />} label="LIVE ALERT" active={isActive('/alerts')} to="/alerts" />
+                <MobileNavItem icon={<Clock size={18} />} label="Driver TimeLine" active={isActive('/timeline')} to="/timeline" />
                 
                 <div className="border-t border-gray-700 mt-2 pt-2">
                   <MobileNavItem 
@@ -295,25 +334,5 @@ export default function Header() {
         </AnimatePresence>
       </div>
     </motion.header>
-  )
-}
-
-// Mobile Navigation Item
-function MobileNavItem({ icon, label, active = false, onClick }) {
-  return (
-    <motion.div
-      className={`flex items-center px-4 py-3 ${active ? "bg-[#337ab7]" : ""}`}
-      whileTap={{ backgroundColor: "#1a4971" }}
-      onClick={onClick}
-    >
-      <div className="mr-3">{icon}</div>
-      <span className="font-medium">{label}</span>
-      {active && (
-        <motion.div 
-          className="ml-auto h-2 w-2 rounded-full bg-yellow-400"
-          layoutId="mobileActiveIndicator"
-        />
-      )}
-    </motion.div>
   )
 }
