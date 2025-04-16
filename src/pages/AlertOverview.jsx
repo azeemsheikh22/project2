@@ -370,50 +370,52 @@ export default function AlertOverview() {
 }
 
 function AlertCard({ id, title, description, lastTriggered, count, severity, type, severityColor, typeIcon }) {
-  return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-      <div className="flex">
-        {/* Left side with ID badge and count */}
-        <div className="relative w-28 bg-gray-50 flex items-center justify-center py-6">
-          <div className={`absolute top-3 left-3 ${severityColor} text-white text-xs rounded-full w-12 h-12 flex items-center justify-center font-medium shadow-md`}>
-            {id}
-          </div>
-          <div className="text-4xl font-bold text-gray-700">{count}</div>
-        </div>
-
-        {/* Right side with details */}
-        <div className="p-5 flex-1">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center">
-              <span className="mr-2 text-lg">{typeIcon}</span>
-              <h3 className="text-base font-semibold text-indigo-700 truncate">{title}</h3>
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+        <div className="flex flex-col sm:flex-row">
+          {/* Left side with ID badge and count - stacks vertically on mobile */}
+          <div className="relative w-full sm:w-28 bg-gray-50 flex items-center justify-center py-4 sm:py-6">
+            <div className={`absolute top-3 left-3 ${severityColor} text-white text-xs rounded-full w-12 h-12 flex items-center justify-center font-medium shadow-md`}>
+              {id}
             </div>
-            <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-              severity === 'critical' ? 'bg-red-100 text-red-800' :
-              severity === 'high' ? 'bg-orange-100 text-orange-800' :
-              severity === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-              'bg-blue-100 text-blue-800'
-            }`}>
-              {severity.charAt(0).toUpperCase() + severity.slice(1)}
-            </div>
+            <div className="text-4xl font-bold text-gray-700">{count}</div>
           </div>
-          
-          <p className="text-sm text-gray-600 mb-2">{description}</p>
-          <p className="text-xs text-gray-500 mb-4">{lastTriggered}</p>
-
-          <div className="flex text-sm mt-3 pt-3 border-t border-gray-100">
-            <a href="#" className="flex items-center text-indigo-600 hover:text-indigo-800 mr-6">
-              <FontAwesomeIcon icon={faEye} className="mr-2" />
-              <span>Policy Summary</span>
-            </a>
-            <a href="#" className="flex items-center text-indigo-600 hover:text-indigo-800">
-              <FontAwesomeIcon icon={faPencilAlt} className="mr-2" />
-              <span>Edit Policy</span>
-            </a>
+  
+          {/* Right side with details */}
+          <div className="p-4 sm:p-5 flex-1">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+              <div className="flex items-center">
+                <span className="mr-2 text-lg flex-shrink-0">{typeIcon}</span>
+                <h3 className="text-base font-semibold text-indigo-700 truncate">{title}</h3>
+              </div>
+              <div className={`px-3 py-1 rounded-full text-xs font-medium w-fit ${
+                severity === 'critical' ? 'bg-red-100 text-red-800' :
+                severity === 'high' ? 'bg-orange-100 text-orange-800' :
+                severity === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                'bg-blue-100 text-blue-800'
+              }`}>
+                {severity.charAt(0).toUpperCase() + severity.slice(1)}
+              </div>
+            </div>
+            
+            <p className="text-sm text-gray-600 mb-2 line-clamp-2">{description}</p>
+            <p className="text-xs text-gray-500 mb-4">{lastTriggered}</p>
+  
+            <div className="flex flex-wrap text-sm mt-3 pt-3 border-t border-gray-100 gap-4">
+              <a href="#" className="flex items-center text-indigo-600 hover:text-indigo-800">
+                <FontAwesomeIcon icon={faEye} className="mr-2 flex-shrink-0" />
+                <span>Policy Summary</span>
+              </a>
+              <a href="#" className="flex items-center text-indigo-600 hover:text-indigo-800">
+                <FontAwesomeIcon icon={faPencilAlt} className="mr-2 flex-shrink-0" />
+                <span>Edit Policy</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  )
-}
+    )
+  }
+  
+  
 
