@@ -1,12 +1,12 @@
 import './App.css'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import GeofenceDashboard from './pages/geofence-dashboard'
 import MapView from './pages/MapView'
 import AlertOverview from './pages/AlertOverview'
 
 function App() {
   return (
-    <Router>
+  
       <div className='h-screen bg-black w-full'>
         <Routes>
           <Route path="/geofence" element={<GeofenceDashboard />} />
@@ -18,7 +18,7 @@ function App() {
           {/* <Route path="/contact" element={<Contact />} /> */}
         </Routes>
       </div>
-    </Router>
+   
   )
 }
 

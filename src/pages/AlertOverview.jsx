@@ -13,8 +13,6 @@ import {
   faPencilAlt,
   faChartLine,
   faInfoCircle,
-  faShieldAlt,
-  faExclamation
 } from "@fortawesome/free-solid-svg-icons"
 import Header from "../compunents/ui/Header"
 
